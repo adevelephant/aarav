@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>aarav</title>
+
+<!-- Open Graph -->
+<meta property="og:title" content="aarav">
+<meta property="og:description" content="student developer from perth, western australia.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://develephant.github.io">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="aarav">
+<meta name="twitter:description" content="student developer from perth, western australia.">
+<meta name="description" content="student developer from perth, western australia.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;1,14..32,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0b0d10;
+  --dark: #f4f7fb;
+  --grey: #94a0ad;
+}
+
+html { scroll-behavior: auto; }
+
+body {
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.scroll-track { position: relative; }
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.words-container {
+  /* Use normal text flow so word-spacing works properly */
+  max-width: 1100px;
+  width: 100%;
+  padding: 0 8vw;
+  font-size: clamp(1.4rem, 3vw, 3rem);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  word-spacing: 0.15em;
+  /* center-align the text */
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .words-container {
+    padding: 0 6vw;
+    font-size: clamp(1.25rem, 5.5vw, 2.5rem);
+    line-height: 1.35;
+  }
+}
+@media (max-width: 480px) {
+  .words-container {
+    padding: 0 5vw;
+    font-size: clamp(1.1rem, 6vw, 2rem);
+    line-height: 1.4;
+  }
+}
+
+.word {
+  display: inline;
+  will-change: opacity, filter;
+  opacity: 0.12;
+  filter: blur(6px);
+  font-weight: 400;
+}
+
+.word.dark { color: var(--dark); }
+.word.grey { color: var(--grey); }
+
+/* Space between words — a real space node handled in JS */
+
+/* When all-revealed */
+.word.revealed {
+  transition: opacity 0.5s ease, filter 0.5s ease;
+  opacity: 1 !important;
+  filter: blur(0px) !important;
+}
+
+.wave {
+  display: inline-block;
+  transform-origin: 70% 80%;
+  animation: wave-hand 2.4s ease-in-out infinite;
+}
+@keyframes wave-hand {
+  0%   { transform: rotate(0deg); }
+  8%   { transform: rotate(20deg); }
+  16%  { transform: rotate(-8deg); }
+  24%  { transform: rotate(20deg); }
+  32%  { transform: rotate(-5deg); }
+  42%  { transform: rotate(12deg); }
+  52%  { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.word-nowrap {
+  white-space: nowrap;
+}
+.mexican-wave {
+  display: inline-block;
+  animation: mexican-wave 2s ease-in-out infinite;
+}
+@keyframes mexican-wave {
+  0%, 70%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-8px); }
+}
+
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.hint {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+@media (max-width: 768px) {
+  .hint { bottom: 1.5rem; }
+}
+.hint span {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+.hint svg { animation: bounce 1.8s ease-in-out infinite; }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+.hint.hidden { opacity: 0; }
+
+.social-links {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2.5rem;
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+  z-index: 11;
+}
+@media (max-width: 768px) {
+  .social-links { 
+    bottom: 1.5rem;
+    gap: 1.8rem;
+  }
+}
+.social-links.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.social-links a {
+  color: #808080;
+  text-decoration: none;
+  transition: all 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.social-links a:hover {
+  color: var(--dark);
+}
+.social-links svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (max-width: 768px) {
+  .social-links svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.credits {
+  position: fixed;
+  bottom: 0.75rem;
+  right: 1.25rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  font-family: 'Inter', sans-serif;
+  color: var(--grey);
+  opacity: 0.45;
+  pointer-events: auto;
+  z-index: 12;
+}
+.credits a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: color 0.2s ease;
+}
+.credits a:hover { color: #ffffff; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="scroll-track" id="track">
+  <div class="stage">
+    <div class="words-container" id="container"></div>
+  </div>
+</div>
+
+<div class="hint" id="hint">
+  <span>scroll</span>
+  <svg width="36" height="52" viewBox="0 0 14 22" fill="none" stroke="#f4f7fb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="1" y="1" width="12" height="20" rx="6"/>
+    <line x1="7" y1="5" x2="7" y2="9"/>
+  </svg>
+</div>
+
+<div class="credits">credit <a href="https://adeveloperduck.github.io/index.html" target="_blank" rel="noopener noreferrer">nav</a></div>
+
+<div class="social-links" id="social-links">
+  <a href="https://github.com/adevelephant" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    </svg>
+  </a>
+  <a href="mailto:aaravgarg1011@gmail.com">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+  </a>
+</div>
+
+<script>
+  const words = [
+    { text: 'hello',           color: 'dark', },
+    { text: '👋',              color: 'dark', wave: true },
+    { text: "I'm",             color: 'grey' },
+    { text: 'aarav,',          color: 'dark' },
+    { text: 'aka',            color: 'grey' },
+    { text: 'develephant,',     color: 'dark' },
+    { text: 'a',               color: 'grey' },
+    { text: 'student',         color: 'dark' },
+    { text: 'developer',       color: 'dark' },
+    { text: 'who',             color: 'grey' },
+    { text: 'lives',           color: 'grey' },
+    { text: 'in',              color: 'grey' },
+    { text: 'perth,',          color: 'dark' },
+    { text: 'western',         color: 'dark' },
+    { text: 'australia.',      color: 'dark' },
+    { text: 'I',               color: 'grey' },
+    { text: 'enjoy',           color: 'grey' },
+    { text: 'playing',         color: 'grey' },
+    { text: 'with',            color: 'grey' },
+    { text: 'swift',           color: 'dark' },
+    { text: '&',               color: 'grey' },
+    { text: 'swiftui.',        color: 'dark' },
+    { text: 'I',     color: 'grey' },
+    { text: 'usually',     color: 'grey' },
+    { text: 'work',     color: 'dark' },
+    { text: 'with',     color: 'grey' },
+    { text: 'nav',     color: 'dark', link: 'https://adeveloperduck.github.io/index.html' },
+    { text: 'Welcome',         color: 'dark', mexicanWave: true },
+    { text: 'to',              color: 'grey' },
+    { text: 'my',              color: 'grey' },
+    { text: 'website',          color: 'dark' },
+  ];
+
+  const container = document.getElementById('container');
+  const track     = document.getElementById('track');
+  const hint      = document.getElementById('hint');
+  const myWordIndex = words.findIndex(w => w.text === 'my');
+
+  // Build DOM — inject real space text nodes between words so the
+  // browser's normal word-spacing / line-breaking works correctly
+  const els = words.map((w, i) => {
+    const span = document.createElement('span');
+    span.classList.add('word', w.color);
+
+    if (w.link) {
+      const link = document.createElement('a');
+      link.href = w.link;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.color = 'inherit';
+      link.style.textDecoration = 'underline';
+      link.style.textDecorationColor = 'var(--grey)';
+      link.style.transition = 'text-decoration-color 0.3s ease';
+      link.addEventListener('mouseenter', () => {
+        link.style.textDecorationColor = 'var(--dark)';
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.textDecorationColor = 'var(--grey)';
+      });
+      link.textContent = w.text;
+      span.appendChild(link);
+    } else if (w.mexicanWave) {
+      span.classList.add('word-nowrap');
+      // Split word into individual letters for Mexican wave effect
+      w.text.split('').forEach((letter, letterIndex) => {
+        const letterSpan = document.createElement('span');
+        letterSpan.classList.add('mexican-wave');
+        letterSpan.textContent = letter;
+        letterSpan.style.animationDelay = `${letterIndex * 0.1}s`;
+        span.appendChild(letterSpan);
+      });
+    } else if (w.wave) {
+      const inner = document.createElement('span');
+      inner.classList.add('wave');
+      inner.textContent = w.text;
+      span.appendChild(inner);
+    } else {
+      span.textContent = w.text;
+    }
+
+    container.appendChild(span);
+
+    // Real space between words
+    if (i < words.length - 1) {
+      container.appendChild(document.createTextNode(' '));
+    }
+
+    return span;
+  });
+
+  const N           = words.length;
+  const PX_PER_WORD = 120;
+  const END_SCROLL  = 400;
+  track.style.height = (PX_PER_WORD * N + END_SCROLL + window.innerHeight) + 'px';
+
+  let allRevealed = false;
+  let lastScrollY = window.scrollY;
+  let myAutoScrollArmed = true;
+  let myAutoScrollTriggerY = -Infinity;
+
+  function render() {
+    const scrollY   = window.scrollY;
+    const isScrollingForward = scrollY > lastScrollY;
+    const maxScroll = track.scrollHeight - window.innerHeight;
+    hint.classList.toggle('hidden', scrollY > 10);
+
+    const revealStart = maxScroll - END_SCROLL;
+
+    if (scrollY >= revealStart) {
+      const t = (scrollY - revealStart) / END_SCROLL;
+      if (t >= 0.3 && !allRevealed) {
+        allRevealed = true;
+        els.forEach(el => el.classList.add('revealed'));
+        launchConfetti();
+        document.getElementById('social-links').classList.add('show');
+        document.getElementById('hint').style.opacity = '0';
+      }
+      return;
+    }
+
+    if (allRevealed) {
+      allRevealed = false;
+      els.forEach(el => el.classList.remove('revealed'));
+      document.getElementById('social-links').classList.remove('show');
+    }
+
+    const ramp = Math.min(1, scrollY / (PX_PER_WORD * 3));
+    let myIsUnblurred = false;
+
+    els.forEach((el, i) => {
+      const peak       = i * PX_PER_WORD + PX_PER_WORD / 2;
+      const dist       = Math.abs(scrollY - peak);
+      const holdRadius = PX_PER_WORD * (0.5 + ramp * 2.0);
+      const fadeRadius = PX_PER_WORD * (1.4 + ramp * 2.1);
+
+      let a;
+      if (dist <= holdRadius) {
+        a = 1;
+      } else if (dist <= fadeRadius) {
+        const t = (dist - holdRadius) / (fadeRadius - holdRadius);
+        a = 1 - t * t;
+      } else {
+        a = 0;
+      }
+
+      el.style.opacity = 0.12 + a * 0.88;
+      el.style.filter  = `blur(${((1 - a) * 8).toFixed(2)}px)`;
+
+      if (i === myWordIndex && a >= 0.999) {
+        myIsUnblurred = true;
+      }
+    });
+
+    if (!isScrollingForward && scrollY < myAutoScrollTriggerY - 80) {
+      myAutoScrollArmed = true;
+    }
+
+    if (!restoringScroll && myAutoScrollArmed && isScrollingForward && myIsUnblurred) {
+      myAutoScrollArmed = false;
+      myAutoScrollTriggerY = scrollY;
+      window.scrollBy({ top: 1000, behavior: 'smooth' });
+    }
+
+    lastScrollY = scrollY;
+  }
+
+  // Scroll preservation: only save when navigating to internal pages,
+  // so refresh always resets but back-button restores
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
+  // Restore saved scroll if available (set by internal link click), then clear it
+  const savedScroll = sessionStorage.getItem('scrollY');
+  let restoringScroll = false;
+  if (savedScroll !== null) {
+    restoringScroll = true;
+    const pos = parseInt(savedScroll, 10);
+    sessionStorage.removeItem('scrollY');
+    window.scrollTo(0, pos);
+    // Immediately reveal everything without confetti
+    const maxScroll = track.scrollHeight - window.innerHeight;
+    const revealStart = maxScroll - END_SCROLL;
+    if (pos >= revealStart) {
+      allRevealed = true;
+      els.forEach(el => el.classList.add('revealed'));
+      document.getElementById('social-links').classList.add('show');
+      document.getElementById('hint').style.opacity = '0';
+    }
+    requestAnimationFrame(() => {
+      window.scrollTo(0, pos);
+      render();
+      restoringScroll = false;
+    });
+  } else {
+    window.scrollTo(0, 0);
+  }
+
+  // Handle bfcache (Safari)
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) render();
+  });
+
+  window.addEventListener('scroll', render, { passive: true });
+  render();
+
+  /* ── Confetti ── */
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  let particles = [], rafId = null;
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = ['#ff595e','#ffca3a','#6a4c93','#1982c4','#8ac926','#ff924c','#c77dff','#4cc9f0'];
+
+  function launchConfetti() {
+    if (rafId) return;
+    particles = Array.from({ length: 220 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height * 0.2 - 10,
+      w: 7 + Math.random() * 7,
+      h: 4 + Math.random() * 4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.16,
+      vx: (Math.random() - 0.5) * 3,
+      vy: 2.5 + Math.random() * 3.5,
+      gravity: 0.12,
+      opacity: 1,
+    }));
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      particles.forEach(p => {
+        p.vy += p.gravity; p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+        if (p.y > canvas.height * 0.7) p.opacity -= 0.018;
+        if (p.opacity <= 0 || p.y > canvas.height + 20) return;
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      rafId = alive ? requestAnimationFrame(loop) : (ctx.clearRect(0,0,canvas.width,canvas.height), null);
+    })();
+  }
+</script>
+</body>
+</html>
